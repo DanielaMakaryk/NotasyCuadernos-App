@@ -4,10 +4,6 @@ Aplicación Web de productividad para gestión de notas y apuntes. Proyecto prof
 
 # NotasyCuadernos-App 📝💻
 
-Aplicación Web de productividad para gestión de notas y apuntes. Proyecto profesional freelance (2026).
-
-# Notas y Cuadernos App 🧠✨
-
 Aplicación web interactiva orientada a la productividad, organización personal y gestión ágil de apuntes y tareas en tiempo real.
 
 ### 🚀 Características del Proyecto:
