@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notas y Cuadernos - DA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rosa-fondo: #FFF0F5;
+            --rosa-fuerte: #DB7093;
+            --celeste: #89CFF0;
+            --lila: #B39DDB;
+            --verde-agua: #72D572;
+            --oro: #FFD700;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--rosa-fondo);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* ENCABEZADO CON LAPICERA Y BRILLO */
+        .app-header {
+            width: 90%;
+            padding: 40px 0 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 15px;
+        }
+
+        .app-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--rosa-fuerte);
+            margin: 0;
+            font-size: 1.8rem;
+            transition: 0.4s;
+            text-shadow: 2px 2px 4px rgba(219, 112, 147, 0.2);
+        }
+
+        .app-header:hover h1 {
+            text-shadow: 0 0 15px var(--rosa-fuerte);
+        }
+
+        .pen-icon {
+            font-size: 1.8rem;
+            animation: scribble 2s infinite ease-in-out;
+        }
+
+        @keyframes scribble {
+            0%, 100% { transform: rotate(0deg) translate(0,0); }
+            25% { transform: rotate(-15deg) translate(-2px, 2px); }
+            75% { transform: rotate(15deg) translate(2px, -2px); }
+        }
+
+        /* SECCIÓN NOTA */
+        .memo-section {
+            width: 85%;
+            max-width: 450px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        #memoInput {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--rosa-fuerte);
+            border-radius: 15px;
+            font-family: 'Montserrat', sans-serif;
+            resize: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .btn-memo {
+            background: var(--rosa-fuerte);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 25px;
+            margin-top: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-memo:hover {
+            box-shadow: 0 0 15px var(--rosa-fuerte);
+            transform: scale(1.05);
+        }
+
+        .memo-result {
+            background: white;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--rosa-fuerte);
+        }
+
+        /* CUADERNOS CON AJUSTE DE PRECISIÓN INDIVIDUAL DE ORFEBRERÍA */
+        .notebook-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            width: 85%;
+            max-width: 450px;
+            margin-top: 10px;
+            margin-bottom: 60px;
+        }
+
+        .notebook-item {
+            height: 220px;
+            border-radius: 5px 15px 15px 5px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            transition: 0.4s;
+            box-shadow: 8px 8px 20px rgba(0,0,0,0.15);
+            color: white;
+            font-family: 'Playfair Display', serif;
+            font-weight: bold;
+            font-size: 1.35rem;
+            border-left: 12px solid rgba(0,0,0,0.2);
+            /* Centrado perfecto en el lienzo del cuaderno (libre de solapa) */
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        /* Ajuste individual de orfebrería para que cada palabra respire */
+        #nbDiario { padding-right: 25px; } /* Ajuste exacto para la 'o' de Diario */
+        #nbTrabajo { padding-right: 25px; } /* Ajuste exacto para la 'o' de Trabajo */
+        #nbEstudio { padding-right: 25px; } /* Ajuste exacto para la 'o' de Estudio */
+        #nbHogar { padding-right: 25px; }   /* Ajuste exacto para la 'r' de Hogar */
+
+        .solapa-ext {
+            position: absolute;
+            right: 0;
+            width: 30px;
+            height: 20px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 5px 0 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .broche-ext { width: 8px; height: 8px; background: gold; border-radius: 50%; }
+
+        .notebook-item:hover { transform: scale(1.05); }
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--rosa-fondo);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        .notebook-open {
+            width: 90%;
+            max-width: 410px;
+            height: 85vh;
+            border-radius: 15px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .page-content {
+            background: white;
+            flex: 1;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.1);
+        }
+
+        #notebookTextarea {
+            width: 100%;
+            height: 100%;
+            border: none; outline: none;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            background: transparent;
+            resize: none;
+        }
+
+        .solapa-int {
+            position: absolute;
+            right: -8px;
+            top: 60px;
+            width: 55px;
+            height: 40px;
+            background: inherit;
+            border-radius: 0 12px 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 4px 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .broche-int { width: 14px; height: 14px; background: gold; border-radius: 50%; }
+
+        .eraser {
+            width: 50px;
+            height: 25px;
+            background: linear-gradient(to right, #ff4d4d 50%, #4d79ff 50%);
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 15px auto;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <span class="pen-icon">🖋️</span>
+    <h1>Notas y Cuadernos</h1>
+</div>
+
+<section class="memo-section">
+    <textarea id="memoInput" rows="2" placeholder="Escribir nota aquí..."></textarea>
+    <button class="btn-memo" onclick="saveMemo()">Guardar nota</button>
+    <div id="memoContainer" class="memo-result">
+        <span id="memoText" style="flex:1; text-align:left;"></span>
+        <span style="cursor:pointer; font-size: 1.2rem;" onclick="deleteMemo()">🗑️</span>
+    </div>
+</section>
+
+<div class="notebook-grid">
+    <div class="notebook-item" id="nbDiario" style="background: var(--rosa-fuerte);" onclick="openNb('Diario', '#DB7093')">
+        Diario <div class="solapa-ext"><div class="broche-ext"></div></div>
+    </div>
+    <div class="notebook-item" id="nbTrabajo" style="background: var(--celeste);" onclick="openNb('Trabajo', '#89CFF0')">
+        Trabajo <div class="solapa-ext"><div class="broche-ext"></div></div>
+    </div>
+    <div class="notebook-item" id="nbEstudio" style="background: var(--lila);" onclick="openNb('Estudio', '#B39DDB')">
+        Estudio <div class="solapa-ext"><div class="broche-ext"></div></div>
+    </div>
+    <div class="notebook-item" id="nbHogar" style="background: var(--verde-agua);" onclick="openNb('Hogar', '#72D572')">
+        Hogar <div class="solapa-ext"><div class="broche-ext"></div></div>
+    </div>
+</div>
+
+<div class="modal" id="nbModal">
+    <div class="notebook-open" id="nbBg">
+        <div class="solapa-int" onclick="closeNb()">
+            <div class="broche-int"></div>
+        </div>
+        <div class="page-content">
+            <textarea id="notebookTextarea"></textarea>
+        </div>
+        <div class="eraser" title="Borrar todo" onclick="clearPage()"></div>
+    </div>
+</div>
+
+<script>
+    function saveMemo() {
+        const val = document.getElementById('memoInput').value;
+        if(val) {
+            document.getElementById('memoText').innerText = val;
+            document.getElementById('memoContainer').style.display = 'flex';
+            document.getElementById('memoInput').value = '';
+        }
+    }
+    function deleteMemo() { document.getElementById('memoContainer').style.display = 'none'; }
+
+    const modal = document.getElementById('nbModal');
+    let currentNb = '';
+
+    function openNb(title, color) {
+        currentNb = title;
+        document.getElementById('nbBg').style.backgroundColor = color;
+        document.getElementById('notebookTextarea').value = localStorage.getItem('DA_NB_' + currentNb) || '';
+        modal.style.display = 'flex';
+        document.getElementById('notebookTextarea').focus();
+    }
+
+    function closeNb() {
+        localStorage.setItem('DA_NB_' + currentNb, document.getElementById('notebookTextarea').value);
+        modal.style.display = 'none';
+    }
+
+    function clearPage() {
+        document.getElementById('notebookTextarea').value = '';
+        localStorage.setItem('DA_NB_' + currentNb, '');
+    }
+</script>
+
+</body>
+</html>
+
+      
